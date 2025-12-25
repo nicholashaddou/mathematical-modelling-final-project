@@ -1,12 +1,12 @@
 import random
 import scipy as sp
-import diffrax
+#import diffrax
 
 def sir_model():
-    beta = 0 # Infection rate
-    r = 0 # Constant per capita recovery rate
+    beta = 1**-3 # Infection rate
+    r = 1**-1 # Constant per capita recovery rate
 
-    S = 1000 # Initial susceptible population
+    S = 499 # Initial susceptible population
     I = 1    # Initial infected population
     R = 0    # Initial recovered population
     N = S + I + R  # Initial total population
@@ -16,6 +16,7 @@ def sir_model():
     rate_of_new_infections = beta * S * I
     rate_of_recovery = r * I
 
+    #differential equations for the S->I->R scheme
     dS = -beta * S * I
     dI = beta * S * I - r * I
     dR = r * I
