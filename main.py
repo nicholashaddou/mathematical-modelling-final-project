@@ -1,5 +1,6 @@
 import random
 import scipy as sp
+import diffrax
 
 def sir_model():
     beta = 0 # Infection rate
@@ -15,4 +16,13 @@ def sir_model():
     rate_of_new_infections = beta * S * I
     rate_of_recovery = r * I
 
+    dS = -beta * S * I
+    dI = beta * S * I - r * I
+    dR = r * I
+    der = [dS, dI, dR]
+
+    return der
+
+def sir_simulation():
+    list_of_values = sir_model()
     #for day in range(days):
