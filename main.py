@@ -3,12 +3,12 @@ import scipy as sp
 #import diffrax
 
 def sir_model():
-    beta = 1**-3 # Infection rate
-    r = 1**-1 # Constant per capita recovery rate
-    m = 1 # Host death rate
-    v = 1 # Pathogen induced mortality rate
+    beta = 0.02 # Infection rate
+    r = 0.3 # Constant per capita recovery rate
+    m = 1**-4 # Host death rate
+    v = 0.1 # Pathogen induced mortality rate
 
-    S = 499 # Initial susceptible population
+    S = 50 # Initial susceptible population
     I = 1    # Initial infected population
     R = 0    # Initial recovered population
     N = S + I + R  # Initial total population
