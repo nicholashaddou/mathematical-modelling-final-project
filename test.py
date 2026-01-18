@@ -68,7 +68,7 @@ class SIRSimulation(sim.Component):
             self.hold(0)
 
 
-def run_ensemble(n_sim=200, max_time=50, time_grid=None):
+def run_ensemble(n_sim=1000, max_time=50, time_grid=None):
     if time_grid is None:
         time_grid = np.linspace(0, max_time, 200)
 
@@ -104,7 +104,66 @@ def run_ensemble(n_sim=200, max_time=50, time_grid=None):
     )
 
 
+def summarize_results(time, S_all, I_all, R_all, extinction_times):
+    n_sim = I_all.shape[0]
+    final_time = time[-1]
+
+    # Peak infection per simulation
+    peak_I = I_all.max(axis=1)
+
+    # Final recovered (outbreak size)
+    final_R = R_all[:, -1]
+
+    # Extinction statistics
+    extinct = extinction_times < np.inf
+    P_ext = np.mean(extinct)
+    mean_ext_time = np.mean(extinction_times[extinct]) if np.any(extinct) else np.nan
+
+    print("\n================= STOCHASTIC SIR SUMMARY =================")
+    print(f"Number of simulations: {n_sim}")
+    print(f"Simulation horizon: {final_time:.1f} time units\n")
+
+    print("---- Infection dynamics ----")
+    print(f"Mean peak infected: {np.mean(peak_I):.2f}")
+    print(f"Min / Max peak infected: {np.min(peak_I):.0f} / {np.max(peak_I):.0f}")
+    print(f"Mean total recovered (final outbreak size): {np.mean(final_R):.2f}\n")
+
+    print("---- Extinction behavior ----")
+    print(f"Probability of extinction by T={final_time:.1f}: {P_ext:.3f}")
+    if np.any(extinct):
+        print(f"Mean time to extinction (conditional): {mean_ext_time:.2f}")
+    else:
+        print("No extinctions observed")
+
+    print("\n================ INTERPRETATION =================")
+
+    # Interpretation logic
+    if P_ext > 0.5:
+        print(
+            "- High extinction probability indicates strong stochastic effects.\n"
+            "- Even when infection is possible, outbreaks frequently die out early."
+        )
+    else:
+        print(
+            "- Low extinction probability suggests sustained transmission.\n"
+            "- Deterministic models may be reasonable approximations here."
+        )
+
+    if np.std(peak_I) / np.mean(peak_I) > 0.3:
+        print(
+            "- Large variability in peak infections indicates unpredictable outbreak severity.\n"
+            "- Single realizations are not representative of the expected behavior."
+        )
+
+    print(
+        "- Mean outbreak size reflects expected healthcare burden.\n"
+        "- Early intervention would significantly increase extinction probability."
+    )
+
+    print("==========================================================\n")
+
 time, S_all, I_all, R_all, extinction_times = run_ensemble()
+summarize_results(time, S_all, I_all, R_all, extinction_times)
 
 # Mean and quantiles
 I_mean = I_all.mean(axis=0)
